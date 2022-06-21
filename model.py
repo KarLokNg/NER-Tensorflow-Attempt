@@ -31,23 +31,32 @@ dataset_test = load_dataset("conll2003", split="test")
 
 # The following function would do some pre-processing by splitting the words into characters, while keeping the tags
 def split_tokens(dataset_row):
-
+    # The function considers one row of the dataset
+    # and outputs a tuple of inputs to the model and outputs
+    
+    # Gathering the relavent data from the dataset
     tokens = dataset_row["tokens"]
     pos_tags = dataset_row["pos_tags"]
     chunk_tags = dataset_row["chunk_tags"]
     ner_tags = dataset_row["ner_tags"]
-
+    
+    # Initializing lists
     output_tokens = []
     output_pos_tags = []
     output_chunk_tags = []
     output_ner_tags = []
-
+    
+    # Iterating over the data
     for token,pos_tags,chunk_tags,ner_tags in zip(tokens, pos_tags, chunk_tags, ner_tags):
+        # Splitting the tokens into characters
         token_split = [char for char in token]
+        
+        # Multiplying the tags to match them with the characters
         pos_tag_split = [[pos_tags] * len(token)]
         chunk_tag_split = [[chunk_tags] * len(token)]
         ner_tag_split = [[ner_tags] * len(token)]
-
+        
+        # Adding it to the lists
         output_tokens.extend(token_split)
         output_pos_tags.extend(pos_tag_split)
         output_chunk_tags.extend(chunk_tag_split)
@@ -58,9 +67,11 @@ def split_tokens(dataset_row):
 
     # converts strings to ASCII integers
     output_tokens = list(map(ord, output_tokens))
-
+    
+    # Return the relavent tags. I've taken out the chunk/pos information as we aren't using it right now
     return((output_tokens, output_ner_tags))#output_pos_tags, output_chunk_tags, output_ner_tags])
 
+# Format the data using the split_tokens function
 formatted_train = [split_tokens(row) for row in dataset_train]
 formatted_vali = [split_tokens(row) for row in dataset_vali]
 formatted_test = [split_tokens(row) for row in dataset_test]
